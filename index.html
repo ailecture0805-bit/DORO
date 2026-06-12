@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도로롱(Doro) 클릭 실험실</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+            overflow: hidden; /* 화면 밖으로 캐릭터가 나가는 것 방지 */
+            position: relative;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+            pointer-events: none; /* 클릭 방해 금지 */
+        }
+
+        /* 도로롱 캐릭터 스타일 */
+        #doro {
+            position: absolute;
+            width: 150px; /* 캐릭터 크기 조절 */
+            height: auto;
+            cursor: pointer;
+            transition: all 0.2s ease-out; /* 부드러운 이동 효과 */
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="info-panel">
+        <h2>도로롱을 클릭해보세요!</h2>
+        <p>클릭 횟수: <span id="click-count">0</span> / 5</p>
+    </div>
+
+    <img id="doro" src="DORO.jpg" alt="도로롱">
+
+    <script>
+        const doro = document.getElementById('doro');
+        const clickCountDisplay = document.getElementById('click-count');
+        
+        let clicks = 0;
+
+        // 처음 시작할 때 정중앙 위치 지정 함수
+        function setCenterPosition() {
+            const startX = (window.innerWidth - doro.offsetWidth) / 2;
+            const startY = (window.innerHeight - doro.offsetHeight) / 2;
+            doro.style.left = startX + 'px';
+            doro.style.top = startY + 'px';
+        }
+
+        // 이미지 로딩 완료 후 또는 창 크기가 바뀔 때 중앙 배치
+        window.onload = setCenterPosition;
+        window.onresize = setCenterPosition;
+
+        // 도로롱 클릭 이벤트
+        doro.addEventListener('click', () => {
+            clicks++;
+            clickCountDisplay.textContent = clicks;
+
+            if (clicks
