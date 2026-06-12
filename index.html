@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>도로롱(Doro) 클릭 실험실</title>
     <style>
         body {
@@ -12,8 +12,11 @@
             height: 100vh;
             background-color: #f0f0f0;
             font-family: sans-serif;
-            overflow: hidden; /* 화면 밖으로 캐릭터가 나가는 것 방지 */
+            overflow: hidden; 
             position: relative;
+            
+            /* 모바일 터치 시 파란색 하이라이트 깜빡임 제거 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         #info-panel {
@@ -22,21 +25,26 @@
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             padding: 10px 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             z-index: 10;
-            pointer-events: none; /* 클릭 방해 금지 */
+            pointer-events: none;
+            word-break: keep-all; /* 모바일 줄바꿈 최적화 */
         }
 
         /* 도로롱 캐릭터 스타일 */
         #doro {
             position: absolute;
-            width: 150px; /* 캐릭터 크기 조절 */
+            /* 모바일 화면을 고려해 크기를 약간 줄임 (원하는 대로 조절 가능) */
+            width: 120px; 
             height: auto;
             cursor: pointer;
-            transition: all 0.2s ease-out; /* 부드러운 이동 효과 */
+            transition: all 0.2s ease-out;
+            
+            /* 모바일에서 꾹 눌렀을 때 이미지 저장/복사 팝업 뜨는 것 방지 */
+            -webkit-touch-callout: none;
             user-select: none;
             -webkit-user-drag: none;
         }
@@ -45,11 +53,11 @@
 <body>
 
     <div id="info-panel">
-        <h2>도로롱을 클릭해보세요!</h2>
-        <p>클릭 횟수: <span id="click-count">0</span> / 5</p>
+        <h3 style="margin: 0 0 5px 0;">도로롱을 터치해보세요!</h3>
+        <p style="margin: 0;">터치 횟수: <span id="click-count">0</span> / 5</p>
     </div>
 
-    <img id="doro" src="DORO.png" alt="도로롱">
+    <img id="doro" src="DORO.jpg" alt="도로롱">
 
     <script>
         const doro = document.getElementById('doro');
@@ -57,7 +65,6 @@
         
         let clicks = 0;
 
-        // 처음 시작할 때 정중앙 위치 지정 함수
         function setCenterPosition() {
             const startX = (window.innerWidth - doro.offsetWidth) / 2;
             const startY = (window.innerHeight - doro.offsetHeight) / 2;
@@ -65,13 +72,37 @@
             doro.style.top = startY + 'px';
         }
 
-        // 이미지 로딩 완료 후 또는 창 크기가 바뀔 때 중앙 배치
-        window.onload = setCenterPosition;
+        // 이미지 로딩 후 중앙 배치
+        if (doro.complete) {
+            setCenterPosition();
+        } else {
+            doro.onload = setCenterPosition;
+        }
+        
         window.onresize = setCenterPosition;
 
-        // 도로롱 클릭 이벤트
+        // 클릭/터치 이벤트
         doro.addEventListener('click', () => {
             clicks++;
             clickCountDisplay.textContent = clicks;
 
-            if (clicks
+            if (clicks >= 5) {
+                setCenterPosition();
+                clicks = 0;
+                setTimeout(() => {
+                    clickCountDisplay.textContent = clicks;
+                }, 500);
+            } else {
+                const maxX = window.innerWidth - doro.offsetWidth;
+                const maxY = window.innerHeight - doro.offsetHeight;
+
+                const randomX = Math.floor(Math.random() * Math.max(0, maxX));
+                const randomY = Math.floor(Math.random() * Math.max(0, maxY));
+
+                doro.style.left = randomX + 'px';
+                doro.style.top = randomY + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
